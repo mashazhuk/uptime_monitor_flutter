@@ -1,7 +1,9 @@
 import 'package:uptime_monitor/constants.dart';
+import 'package:uptime_monitor/controllers/MyMenuController.dart';
 import 'package:uptime_monitor/screens/main/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -20,7 +22,14 @@ class MyApp extends StatelessWidget {
             .apply(bodyColor: Colors.white),
         canvasColor: secondaryColor,
       ),
-      home: MainScreen(),
+      home: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (context) => MyMenuController(),
+          ),
+        ],
+        child: MainScreen(),
+      ),
     );
   }
 }
