@@ -13,24 +13,32 @@ class Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        if (!Responsive.isDesktop(context))
-          IconButton(icon: Icon(Icons.menu), onPressed: context.read<MyMenuController>().controlMenu, color: Colors.white),
-        if (!Responsive.isMobile(context))
-          Text(
-            "Dashboard",
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: Colors.white,
+    return Container(
+      decoration: !Responsive.isDesktop(context)
+        ? BoxDecoration(
+            color: secondaryColor,
+            borderRadius: BorderRadius.circular(10),
+          )
+        : null,
+      child: Row(
+        children: [
+          if (!Responsive.isDesktop(context))
+            IconButton(icon: Icon(Icons.menu), onPressed: context.read<MyMenuController>().controlMenu, color: Colors.white),
+          if (!Responsive.isMobile(context))
+            Text(
+              "Dashboard",
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: Colors.white,
+              ),
             ),
+          if (!Responsive.isMobile(context))
+            Spacer(flex: Responsive.isDesktop(context) ? 2 : 1),
+          Expanded(
+            child: SearchField(),
           ),
-        if (!Responsive.isMobile(context))
-          Spacer(flex: Responsive.isDesktop(context) ? 2 : 1),
-        Expanded(
-          child: SearchField(),
-        ),
-        ProfileCard()
-      ],
+          ProfileCard()
+        ],
+      ),
     );
   }
 }
@@ -49,7 +57,7 @@ class ProfileCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: secondaryColor,
         borderRadius: BorderRadius.all(Radius.circular(10)),
-        border: Border.all(color: Colors.white10),
+        border: Responsive.isDesktop(context) ? Border.all(color: Colors.white10) : null,
       ),
       child: Row(children: [
         Image.asset("assets/images/profile_pic.png", height: 38),
