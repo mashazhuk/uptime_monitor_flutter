@@ -26,4 +26,11 @@ List demoAllSites = [
     lastStatus: "200 Ok",
     uptime: "100%",
   ),
+  AllSite(
+    name: "something",
+    domain: "www.google.com",
+    lastCheck: "23-02-2021",
+    lastStatus: "200 Ok",
+    uptime: "100%",
+  ),
 ];
