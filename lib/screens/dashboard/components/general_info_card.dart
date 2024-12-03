@@ -1,16 +1,17 @@
-import 'package:flutter/models/AllSites.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:uptime_monitor/models/AllSites.dart';
 
 import '../../../constants.dart';
 
 class GeneralInfoCard extends StatelessWidget {
   const GeneralInfoCard({
     Key? key,
-    required this.info,
+    required this.sitesList,
   }) : super(key: key);
 
-  final CloudStorageInfo info;
+  final List sitesList;
 
   @override
   Widget build(BuildContext context) {
@@ -32,43 +33,41 @@ class GeneralInfoCard extends StatelessWidget {
                 height: 40,
                 width: 40,
                 decoration: BoxDecoration(
-                  color: info.color!.withOpacity(0.1),
+                  color: Colors.blue.withOpacity(0.1),
                   borderRadius: const BorderRadius.all(Radius.circular(10)),
                 ),
-                child: SvgPicture.asset(
-                  info.svgSrc!,
-                  colorFilter: ColorFilter.mode(
-                      info.color ?? Colors.black, BlendMode.srcIn),
-                ),
+                // child: SvgPicture.asset(
+                //
+                // ),
               ),
               Icon(Icons.more_vert, color: Colors.white54)
             ],
           ),
           Text(
-            info.title!,
+            "info.name!",
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
           ProgressLine(
-            color: info.color,
-            percentage: info.percentage,
+            color: Colors.deepOrange,
+            percentage: 80,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "${info.numOfFiles} Files",
+                "${calculateTotalUp(sitesList)} Up",
                 style: Theme.of(context)
                     .textTheme
                     .bodySmall!
                     .copyWith(color: Colors.white70),
               ),
               Text(
-                info.totalStorage!,
+                "${calculateTotalDown(sitesList)} Down",
                 style: Theme.of(context)
                     .textTheme
                     .bodySmall!
-                    .copyWith(color: Colors.white),
+                    .copyWith(color: Colors.white70),
               ),
             ],
           )
@@ -113,4 +112,18 @@ class ProgressLine extends StatelessWidget {
       ],
     );
   }
+}
+
+double calculateTotalUp(List infoList) {
+  return infoList.fold(0, (sum, item) {
+    bool isUp = item.lastStatus?.contains("200") ?? false;
+    return sum + (isUp ? 1 : 0);
+  });
+}
+
+double calculateTotalDown(List infoList) {
+  return infoList.fold(0, (sum, item) {
+    bool isDown = !item.lastStatus?.contains("200") ?? false;
+    return sum + (isDown ? 1 : 0);
+  });
 }

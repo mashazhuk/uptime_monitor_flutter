@@ -1,7 +1,8 @@
 class AllSite {
   final String? name, domain, lastCheck, lastStatus, uptime;
+  final int? precentage;
 
-  AllSite({this.name, this.domain, this.lastCheck, this.lastStatus, this.uptime});
+  AllSite({this.name, this.domain, this.lastCheck, this.lastStatus, this.uptime, this.precentage});
 }
 
 List demoAllSites = [
@@ -11,6 +12,7 @@ List demoAllSites = [
     lastCheck: "01-03-2021",
     lastStatus: "200 Ok",
     uptime: "100%",
+    precentage: 100,
   ),
   AllSite(
     name: "laravel.com",
@@ -18,6 +20,7 @@ List demoAllSites = [
     lastCheck: "27-02-2021",
     lastStatus: "500 Error",
     uptime: "90%",
+    precentage: 90
   ),
   AllSite(
     name: "something",
@@ -25,6 +28,7 @@ List demoAllSites = [
     lastCheck: "23-02-2021",
     lastStatus: "200 Ok",
     uptime: "100%",
+      precentage: 80
   ),
   AllSite(
     name: "something",
@@ -32,5 +36,6 @@ List demoAllSites = [
     lastCheck: "23-02-2021",
     lastStatus: "200 Ok",
     uptime: "100%",
+      precentage: 90
   ),
 ];
