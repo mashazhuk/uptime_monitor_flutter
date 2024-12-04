@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:uptime_monitor/constants.dart';
 import 'package:uptime_monitor/models/AllSites.dart';
 
+
 import 'components/all_sites.dart';
 import 'components/header.dart';
 import 'components/my_sites.dart';
@@ -14,7 +15,6 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(

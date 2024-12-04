@@ -2,17 +2,46 @@ import 'package:flutter/material.dart';
 import 'package:uptime_monitor/models/AllSites.dart';
 import 'package:uptime_monitor/responsive.dart';
 import 'package:flutter/cupertino.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 import '../../../constants.dart';
 
-class AllSites extends StatelessWidget {
+class AllSites extends StatefulWidget {
   const AllSites({
     super.key,
   });
 
+  State<AllSites> createState() => _AllSitesState();
+}
+
+class _AllSitesState extends State<AllSites> {
+  late Future<List<AllSite>> siteFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    siteFuture = getSites();
+  }
+
+  static Future<List<AllSite>> getSites() async {
+    var url = Uri.parse("https://uptime-monitor.test/api/sites/");
+    final response = await http.get(
+      url,
+      headers: {"Content-Type": "application/json"},
+    );
+    final body = json.decode(response.body);
+
+    if (body is Map<String, dynamic> && body.containsKey('sites')) {
+      final List<dynamic> sites = body['sites'];
+      return sites.map((e) => AllSite.fromJson(e)).toList();
+    } else {
+      throw Exception('Unexpected JSON structure: missing "sites" key');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-
     return Container(
       padding: EdgeInsets.all(defaultPadding),
       decoration: BoxDecoration(
@@ -27,34 +56,47 @@ class AllSites extends StatelessWidget {
             style: Theme.of(context).textTheme.titleSmall,
           ),
           SizedBox(height: defaultPadding),
-          if (!Responsive.isDesktop(context))
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: demoAllSites.length,
-                physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) =>
-                allSiteCard(context, demoAllSites[index]),
-              )
-          else
-            SizedBox(
-              width: double.infinity,
-              child: DataTable(
-                horizontalMargin: 0,
-                columnSpacing: defaultPadding,
-                columns: [
-                  DataColumn(label: Text("Name")),
-                  DataColumn(label: Text("Domain")),
-                  DataColumn(label: Text("Last check")),
-                  DataColumn(label: Text("Last status")),
-                  DataColumn(label: Text("Uptime")),
-                  DataColumn(label: Text("")),
-                ],
-                rows: List.generate(
-                  demoAllSites.length,
-                      (index) => allSiteDataRow(context, demoAllSites[index]),
-                ),
-              ),
-            ),
+          FutureBuilder<List<AllSite>>(
+            future: siteFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return Center(child: Text('No sites available.'));
+              }
+
+              final sites = snapshot.data!;
+              if (!Responsive.isDesktop(context)) {
+                return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: sites.length,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) => allSiteCard(context, sites[index]),
+                );
+              } else {
+                return SizedBox(
+                  width: double.infinity,
+                  child: DataTable(
+                    horizontalMargin: 0,
+                    columnSpacing: defaultPadding,
+                    columns: [
+                      DataColumn(label: Text("Name")),
+                      DataColumn(label: Text("Domain")),
+                      DataColumn(label: Text("Last check")),
+                      DataColumn(label: Text("Last status")),
+                      DataColumn(label: Text("Uptime")),
+                      DataColumn(label: Text("")),
+                    ],
+                    rows: sites
+                        .map((site) => allSiteDataRow(context, site))
+                        .toList(),
+                  ),
+                );
+              }
+            },
+          ),
         ],
       ),
     );
@@ -66,7 +108,7 @@ class AllSites extends StatelessWidget {
         DataCell(Text(siteInfo.name ?? "N/A")),
         DataCell(Text(siteInfo.domain ?? "N/A")),
         DataCell(Text(siteInfo.lastCheck ?? "N/A")),
-        DataCell(Text(siteInfo.lastStatus ?? "N/A")),
+        DataCell(Text(siteInfo.lastStatusCode?.toString() ?? "N/A")),
         DataCell(Text(siteInfo.uptime ?? "N/A")),
         DataCell(
           IconButton(
@@ -80,7 +122,7 @@ class AllSites extends StatelessWidget {
   }
 
   Widget allSiteCard(BuildContext context, AllSite siteInfo) {
-    bool isUp = siteInfo.lastStatus?.contains("200") ?? false;
+    bool isUp = siteInfo.lastStatusCode == 200;
     return Card(
       margin: EdgeInsets.only(bottom: defaultPadding),
       color: secondaryColor,
@@ -126,4 +168,5 @@ class AllSites extends StatelessWidget {
     );
   }
 }
+
 
