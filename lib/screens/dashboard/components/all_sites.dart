@@ -122,7 +122,8 @@ class _AllSitesState extends State<AllSites> {
   }
 
   Widget allSiteCard(BuildContext context, AllSite siteInfo) {
-    bool isUp = siteInfo.lastStatusCode == 200;
+      bool isUp = siteInfo.lastStatusCode == 200;
+      bool hasLatestCheck = siteInfo.lastCheck != null;
     return Card(
       margin: EdgeInsets.only(bottom: defaultPadding),
       color: secondaryColor,
@@ -137,13 +138,15 @@ class _AllSitesState extends State<AllSites> {
                 children: [
                   Icon(
                     Icons.circle,
-                    color: isUp ? Colors.green : Colors.red,
+                    color: hasLatestCheck
+                        ? (isUp ? Colors.green : Colors.red)
+                        : Colors.grey,
                     size: 16,
                   ),
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      siteInfo.name ?? "N/A",
+                      "${siteInfo.name ?? "N/A"}",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),

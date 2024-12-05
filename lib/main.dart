@@ -7,6 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:uptime_monitor/screens/site/site_info.dart';
 
+import 'screens/site/add_site.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -32,6 +34,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (context) => MainScreen(),
           '/site-info': (context) => SiteInfo(),
+          '/add-site': (context) => AddSite(),
         },
       ),
     );

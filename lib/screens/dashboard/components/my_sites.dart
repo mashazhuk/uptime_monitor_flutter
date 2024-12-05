@@ -33,7 +33,7 @@ class MySites extends StatelessWidget {
                   vertical: defaultPadding,
                 ),
               ),
-              onPressed: () {},
+              onPressed: () { Navigator.of(context).pushNamed("/add-site"); },
               icon: Icon(
                 Icons.add,
                 color: Colors.white,
