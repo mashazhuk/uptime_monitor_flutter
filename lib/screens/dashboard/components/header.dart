@@ -60,12 +60,15 @@ class ProfileCard extends StatelessWidget {
         border: Responsive.isDesktop(context) ? Border.all(color: Colors.white10) : null,
       ),
       child: Row(children: [
-        Image.asset("assets/images/profile_pic.png", height: 38),
+        CircleAvatar(
+          radius: 16,
+          backgroundImage: AssetImage("assets/images/profile_pic.png"),
+        ),
         if (!Responsive.isMobile(context)) Padding(
           padding: EdgeInsets.symmetric(horizontal: defaultPadding / 2),
           child: Text("Surname Name"),
         ),
-        Icon(Icons.keyboard_arrow_down)
+        // Icon(Icons.keyboard_arrow_down)
       ]),
     );
   }

@@ -1,11 +1,12 @@
 class AllSite {
   String? name, domain, lastCheck, lastStatusResponse, uptime;
-  int? precentage, lastStatusCode;
+  int? precentage, lastStatusCode, id;
   bool? isChecked;
 
-  AllSite({this.name, this.domain, this.lastCheck, this.lastStatusCode, this.lastStatusResponse, this.uptime, this.precentage, this.isChecked});
+  AllSite({this.id, this.name, this.domain, this.lastCheck, this.lastStatusCode, this.lastStatusResponse, this.uptime, this.precentage, this.isChecked});
 
   AllSite.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
     name = json['name'];
     domain = json['domain'];
     var latestCheck = json['root_endpoint']?['latest_check'];
