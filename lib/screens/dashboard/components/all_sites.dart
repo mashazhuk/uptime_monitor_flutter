@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:uptime_monitor/config.dart';
 import 'package:uptime_monitor/models/AllSites.dart';
 import 'package:uptime_monitor/responsive.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:convert';
+import 'dart:async';
 import 'package:http/http.dart' as http;
 
 import '../../../constants.dart';
@@ -17,15 +19,31 @@ class AllSites extends StatefulWidget {
 
 class _AllSitesState extends State<AllSites> {
   late Future<List<AllSite>> siteFuture;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     siteFuture = getSites();
+    _startPolling();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _startPolling() {
+    _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+      setState(() {
+        siteFuture = getSites();
+      });
+    });
   }
 
   static Future<List<AllSite>> getSites() async {
-    var url = Uri.parse("https://uptime-monitor.test/api/sites/");
+    var url = Uri.parse(apiUrl);
     final response = await http.get(
       url,
       headers: {"Content-Type": "application/json"},
@@ -127,35 +145,22 @@ class _AllSitesState extends State<AllSites> {
     return Card(
       margin: EdgeInsets.only(bottom: defaultPadding),
       color: secondaryColor,
-      child: Padding(
-        padding: EdgeInsets.all(defaultPadding),
-        child: InkWell(
-          onTap: () => Navigator.of(context).pushNamed("/site-info", arguments: siteInfo),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      child: InkWell(
+        onTap: () => Navigator.of(context).pushNamed("/site-info", arguments: siteInfo),
+        child: Padding(
+          padding: EdgeInsets.all(defaultPadding),
+          child: Column( crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.circle,
-                    color: hasLatestCheck
-                        ? (isUp ? Colors.green : Colors.red)
-                        : Colors.grey,
-                    size: 16,
-                  ),
+              Row( children: [
+                Icon(
+                  Icons.circle,
+                  color: hasLatestCheck ? (isUp ? Colors.green : Colors.red) : Colors.grey, size: 16,
+                ),
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       "${siteInfo.name ?? "N/A"}",
                       style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: IconButton(
-                      icon: Icon(Icons.more_vert),
-                      onPressed: () {},
-                      color: Colors.white54,
                     ),
                   ),
                 ],

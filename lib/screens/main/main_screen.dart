@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uptime_monitor/responsive.dart';
+import 'package:uptime_monitor/screens/auth/login/login_screen.dart';
 import 'package:uptime_monitor/screens/dashboard/dashboard_screen.dart';
 import '../../controllers/MyMenuController.dart';
 import 'components/side_menu.dart';
@@ -20,7 +21,8 @@ class MainScreen extends StatelessWidget {
                   ),
                   Expanded(
                       flex: 5,
-                      child: DashboardScreen(),
+                      child: LoginScreen(),
+                      // child: DashboardScreen(),
                   )
                 ]
             )

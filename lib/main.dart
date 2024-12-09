@@ -1,5 +1,6 @@
 import 'package:uptime_monitor/constants.dart';
 import 'package:uptime_monitor/controllers/MyMenuController.dart';
+import 'package:uptime_monitor/screens/auth/login/login_screen.dart';
 import 'package:uptime_monitor/screens/dashboard/dashboard_screen.dart';
 import 'package:uptime_monitor/screens/main/main_screen.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
           '/': (context) => MainScreen(),
           '/site-info': (context) => SiteInfo(),
           '/add-site': (context) => AddSite(),
+          '/login': (context) => LoginScreen(),
         },
       ),
     );
