@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../config.dart';
 import '../../../constants.dart';
@@ -45,13 +46,20 @@ class _AddSiteFormState extends State<AddSiteForm> {
     }
   }
 
+  Future<String?> _getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('authToken');
+  }
+
   Future<void> submitForm() async {
     try {
+      final String? token = await _getToken();
       final response = await http.post(
-        Uri.parse(apiUrl),
+        Uri.parse('$apiUrl/api/sites'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'Authorization': 'Bearer $token'
         },
         body: jsonEncode({
           'monitor_type': selectedMonitorType,

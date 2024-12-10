@@ -21,8 +21,7 @@ class MainScreen extends StatelessWidget {
                   ),
                   Expanded(
                       flex: 5,
-                      child: LoginScreen(),
-                      // child: DashboardScreen(),
+                      child: DashboardScreen(),
                   )
                 ]
             )

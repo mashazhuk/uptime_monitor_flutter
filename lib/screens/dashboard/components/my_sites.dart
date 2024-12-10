@@ -13,8 +13,6 @@ class MySites extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _size = MediaQuery.of(context).size;
-
     return Column(
       children: [
         Row(
@@ -23,25 +21,6 @@ class MySites extends StatelessWidget {
             Text(
               "Uptime",
               style: Theme.of(context).textTheme.titleSmall,
-            ),
-            ElevatedButton.icon(
-              style: TextButton.styleFrom(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                backgroundColor: primaryColor,
-                padding: EdgeInsets.symmetric(
-                  horizontal: defaultPadding * 1.5,
-                  vertical: defaultPadding,
-                ),
-              ),
-              onPressed: () { Navigator.of(context).pushNamed("/add-site"); },
-              icon: Icon(
-                Icons.add,
-                color: Colors.white,
-              ),
-              label: Text(
-                "Add new",
-                style: TextStyle(color: Colors.white),
-              ),
             ),
           ],
         ),

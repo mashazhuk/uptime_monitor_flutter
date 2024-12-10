@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uptime_monitor/config.dart';
 import 'package:uptime_monitor/models/AllSites.dart';
 import 'package:uptime_monitor/responsive.dart';
@@ -42,11 +43,20 @@ class _AllSitesState extends State<AllSites> {
     });
   }
 
-  static Future<List<AllSite>> getSites() async {
-    var url = Uri.parse(apiUrl);
+  Future<String?> _getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('authToken');
+  }
+
+  Future<List<AllSite>> getSites() async {
+    final String? token = await _getToken();
+    var url = Uri.parse('$apiUrl/api/sites');
     final response = await http.get(
       url,
-      headers: {"Content-Type": "application/json"},
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': 'Bearer $token'
+      },
     );
     final body = json.decode(response.body);
 
@@ -146,7 +156,7 @@ class _AllSitesState extends State<AllSites> {
       margin: EdgeInsets.only(bottom: defaultPadding),
       color: secondaryColor,
       child: InkWell(
-        onTap: () => Navigator.of(context).pushNamed("/site-info", arguments: siteInfo),
+        onTap: () => Navigator.of(context).pushNamed("/site-info/${siteInfo.id}", arguments: siteInfo),
         child: Padding(
           padding: EdgeInsets.all(defaultPadding),
           child: Column( crossAxisAlignment: CrossAxisAlignment.start,

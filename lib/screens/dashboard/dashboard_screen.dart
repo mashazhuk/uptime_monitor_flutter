@@ -17,32 +17,41 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: SingleChildScrollView(
-        padding: EdgeInsets.all(defaultPadding),
-        child: Column(
-          children: [
-            Header(),
-            SizedBox(
-              height: defaultPadding * 2,
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      MySites(),
-                      SizedBox(height: defaultPadding),
-                      AllSites(),
-                    ],
+    return Scaffold(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(defaultPadding),
+          child: Column(
+            children: [
+              Header(),
+              SizedBox(
+                height: defaultPadding * 2,
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: [
+                        MySites(),
+                        SizedBox(height: defaultPadding),
+                        AllSites(),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            )
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
-      ),
+    ),
+    floatingActionButton: FloatingActionButton(
+      backgroundColor: primaryColor,
+      onPressed: () {
+      Navigator.of(context).pushNamed("/add-site");
+      },
+      child: const Icon(Icons.add),
+    ),
     );
   }
 }

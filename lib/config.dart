@@ -1,1 +1,1 @@
-const String apiUrl = "https://uptime-monitor.test/api/sites";
+const String apiUrl = "https://uptime-monitor.test";

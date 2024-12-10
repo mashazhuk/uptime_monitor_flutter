@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uptime_monitor/config.dart';
 
 import 'components/add_site_form.dart';
@@ -24,12 +25,19 @@ class _AddSiteState extends State<AddSite> {
     fetchInitialData();
   }
 
+  Future<String?> _getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('authToken');
+  }
+
   Future<void> fetchInitialData() async {
     try {
+      final String? token = await _getToken();
       final response = await http.get(
-        Uri.parse('$apiUrl/create'),
+        Uri.parse('$apiUrl/api/sites/create'),
         headers: {
           'Accept': 'application/json',
+          'Authorization': 'Bearer $token'
         },
       );
 
@@ -58,7 +66,7 @@ class _AddSiteState extends State<AddSite> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add Site"),
+        title: const Text("Add monitor"),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
