@@ -41,13 +41,19 @@ class _SiteInfoState extends State<SiteInfo> {
       },
     );
 
+    int _convertTimeToMinutes(String dateTime) {
+      final time = DateTime.parse(dateTime);
+      return time.hour * 60 + time.minute;
+    }
+
+
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       final checks = (data['site']['root_endpoint']['checks'] as List)
           .map((check) {
         final dateTime = DateTime.parse(check['created_at']['date_time']);
         return MapEntry<int, double>(
-            dateTime.hour * 60 + dateTime.minute,
+            _convertTimeToMinutes(check['created_at']['date_time']),
             check['response_time'].toDouble());
       }).toList();
       return AllSite.fromJson(data['site'])
@@ -159,7 +165,8 @@ class _SiteInfoState extends State<SiteInfo> {
                         style: TextStyle(color: Colors.white54),
                       ),
                       SizedBox(height: 32),
-                      // Add the chart if data is available
+
+                      // DailyChecksChart()
                       siteInfo.responseTimes != null &&
                           siteInfo.responseTimes!.isNotEmpty
                           ? SizedBox(
