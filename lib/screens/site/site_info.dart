@@ -42,11 +42,6 @@ class _SiteInfoState extends State<SiteInfo> {
       },
     );
 
-    int _convertTimeToMinutes(String dateTime) {
-      final time = DateTime.parse(dateTime);
-      return time.hour * 60 + time.minute;
-    }
-
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       final checks = (data['site']['root_endpoint']['checks'] as List)
@@ -76,7 +71,7 @@ class _SiteInfoState extends State<SiteInfo> {
       },
     );
     if (response.statusCode == 200) {
-      print('Site deleted successfully');
+      Navigator.of(context).pop();
     } else {
       print('Error');
     }
@@ -151,16 +146,34 @@ class _SiteInfoState extends State<SiteInfo> {
               return Text("No data available.");
             } else {
               final siteInfo = snapshot.data!;
-              return siteInfo.responseTimes != null && siteInfo.responseTimes!.isNotEmpty
-                  ? DailyChecksChart(
-                responseTimes: siteInfo.responseTimes!.map((key, value) =>
-                    MapEntry(
-                      key.hour * 60 + key.minute,
-                      value,
+              return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      siteInfo.domain ?? "Site domain unavailable",
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.white54,
+                      ),
                     ),
-                ),
-              )
-                  : Text("No checks data available.");
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      height: 150,
+                      child: siteInfo.responseTimes != null &&
+                          siteInfo.responseTimes!.isNotEmpty
+                          ? DailyChecksChart(
+                              responseTimes: filterCurrentDayData(siteInfo.responseTimes!),
+                            )
+                          : Center(
+                              child: Text(
+                                "No checks data available.",
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                          ),
+                    ),
+                  ],
+              );
             }
           },
         ),
@@ -168,3 +181,18 @@ class _SiteInfoState extends State<SiteInfo> {
     );
   }
 }
+Map<int, double> filterCurrentDayData(Map<DateTime, double> originalData) {
+  final now = DateTime.now();
+  final todayStart = DateTime(now.year, now.month, now.day);
+  final todayEnd = DateTime(now.year, now.month, now.day, 23, 59, 59);
+
+  return Map.fromEntries(
+    originalData.entries
+      .where((entry) => entry.key.isAfter(todayStart) && entry.key.isBefore(todayEnd))
+      .map((entry) => MapEntry(
+        entry.key.hour * 60 + entry.key.minute,
+        entry.value,
+      ))
+  );
+}
+

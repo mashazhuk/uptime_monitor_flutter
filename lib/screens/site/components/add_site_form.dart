@@ -73,6 +73,7 @@ class _AddSiteFormState extends State<AddSiteForm> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Site added successfully!')),
         );
+        Navigator.of(context).pop();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: ${response.body}')),

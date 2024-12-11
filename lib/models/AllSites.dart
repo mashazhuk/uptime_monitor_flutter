@@ -30,7 +30,6 @@ class AllSite {
     uptime = "100%";
     isChecked = latestCheck?['is_successful'] ?? false;
 
-    // Extract and transform checks data for chart
     var checks = json['root_endpoint']?['checks'] as List?;
     if (checks != null) {
       responseTimes = {

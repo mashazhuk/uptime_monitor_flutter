@@ -27,55 +27,40 @@ class DailyChecksChart extends StatelessWidget {
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              reservedSize: 40,
+              reservedSize: 50,
               getTitlesWidget: (value, _) => Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(4.0),
                 child: Text(
-                  value.toInt().toString(),
-                  style: const TextStyle(color: Colors.white),
+                  value.toInt().toString()+"ms",
+                  style: const TextStyle(color: Colors.white, fontSize: 10),
                 ),
               ),
             ),
           ),
           rightTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: false), // Hide right axis
+            sideTitles: SideTitles(showTitles: false),
           ),
           topTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: false), // Hide top axis
+            sideTitles: SideTitles(showTitles: false),
           ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
               reservedSize: 40,
+              interval: 120,
               getTitlesWidget: (value, _) {
-                Widget text;
-                const style = TextStyle(color: Colors.white);
-                print(value);
-                switch (value.toInt()) {
-                  case 100:
-                    text = const Text('MAR', style: style);
-                    break;
-                  case 1440:
-                    text = const Text('JUN', style: style);
-                    break;
-                  case 1440:
-                    text = const Text('SEP', style: style);
-                    break;
-                  default:
-                    text = const Text('', style: style);
-                    break;
+                if (responseTimes.keys.contains(value.toInt())) {
+                  final style = TextStyle(color: Colors.white, fontSize: 12);
+                  final int hours = value ~/ 60;
+                  final int minutes = value.toInt() % 60;
+                  final String label =
+                      '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(label, style: style),
+                  );
                 }
-                final int minutes = value.toInt();
-                final int hours = minutes ~/ 60;
-                final int remainingMinutes = minutes % 60;
-                return text;
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    '${hours.toString().padLeft(2, '0')}:${remainingMinutes.toString().padLeft(2, '0')}',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                );
+                return const SizedBox.shrink();
               },
             ),
           ),
@@ -111,11 +96,16 @@ class DailyChecksChart extends StatelessWidget {
             ),
           ),
         ],
-        minX: 0,
-        maxX: 1440,
-        minY: 0, // Start Y-axis from 0
+        minX: responseTimes.keys.reduce((a, b) => a < b ? a : b).toDouble(),
+        maxX: responseTimes.keys.reduce((a, b) => a > b ? a : b).toDouble() < 1440
+            ? responseTimes.keys.reduce((a, b) => a > b ? a : b).toDouble()
+            : 1440,
+        minY: 0,
         maxY: responseTimes.values.reduce((a, b) => a > b ? a : b),
       ),
+      duration: Duration(milliseconds: 150),// Optional
+      curve: Curves.linear,
+
     );
   }
 }
