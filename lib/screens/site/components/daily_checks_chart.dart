@@ -15,6 +15,19 @@ class _DailyChecksChartState extends State<DailyChecksChart> {
   Widget build(BuildContext context) {
     return LineChart(
       LineChartData(
+        gridData: FlGridData(
+          show: true,
+          horizontalInterval: 100, // Adjust interval as needed
+          drawVerticalLine: true,
+          getDrawingHorizontalLine: (value) => FlLine(
+            color: Colors.grey.shade300,
+            strokeWidth: 1,
+          ),
+          getDrawingVerticalLine: (value) => FlLine(
+            color: Colors.grey.shade300,
+            strokeWidth: 1,
+          ),
+        ),
         lineBarsData: [
           LineChartBarData(
             spots: widget.responseTimes.entries
@@ -47,7 +60,7 @@ class _DailyChecksChartState extends State<DailyChecksChart> {
           ),
         ),
         borderData: FlBorderData(show: true),
-        gridData: FlGridData(show: true),
+        // gridData: FlGridData(show: true),
       ),
     );
   }
