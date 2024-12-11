@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uptime_monitor/screens/site/components/daily_checks_chart.dart';
 import 'dart:convert';
 
 import '../../config.dart';
 import '../../models/AllSites.dart';
+import 'components/daily_checks_chart.dart';
 
 class SiteInfo extends StatefulWidget {
   final int siteId;
@@ -46,16 +47,17 @@ class _SiteInfoState extends State<SiteInfo> {
       return time.hour * 60 + time.minute;
     }
 
-
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       final checks = (data['site']['root_endpoint']['checks'] as List)
           .map((check) {
         final dateTime = DateTime.parse(check['created_at']['date_time']);
-        return MapEntry<int, double>(
-            _convertTimeToMinutes(check['created_at']['date_time']),
-            check['response_time'].toDouble());
+        return MapEntry<DateTime, double>(
+          dateTime,
+          check['response_time'].toDouble(),
+        );
       }).toList();
+
       return AllSite.fromJson(data['site'])
         ..responseTimes = Map.fromEntries(checks);
     } else {
@@ -138,49 +140,29 @@ class _SiteInfoState extends State<SiteInfo> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            FutureBuilder<AllSite>(
-              future: _siteData,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Text("Error loading site data: ${snapshot.error}");
-                } else if (!snapshot.hasData) {
-                  return Text("No data available.");
-                } else {
-                  final siteInfo = snapshot.data!;
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Name: ${siteInfo.name ?? "N/A"}',
-                        style: TextStyle(color: Colors.white54),
-                      ),
-                      SizedBox(height: 16),
-                      Text(
-                        'Domain: ${siteInfo.domain ?? "N/A"}',
-                        style: TextStyle(color: Colors.white54),
-                      ),
-                      SizedBox(height: 32),
-
-                      // DailyChecksChart()
-                      siteInfo.responseTimes != null &&
-                          siteInfo.responseTimes!.isNotEmpty
-                          ? SizedBox(
-                        height: 300, // Adjust height as needed
-                        child: DailyChecksChart(
-                            responseTimes: siteInfo.responseTimes!),
-                      )
-                          : Text("No checks data available."),
-                    ],
-                  );
-                }
-              },
-            ),
-          ],
+        child: FutureBuilder<AllSite>(
+          future: _siteData,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Text("Error loading site data: ${snapshot.error}");
+            } else if (!snapshot.hasData) {
+              return Text("No data available.");
+            } else {
+              final siteInfo = snapshot.data!;
+              return siteInfo.responseTimes != null && siteInfo.responseTimes!.isNotEmpty
+                  ? DailyChecksChart(
+                responseTimes: siteInfo.responseTimes!.map((key, value) =>
+                    MapEntry(
+                      key.hour * 60 + key.minute,
+                      value,
+                    ),
+                ),
+              )
+                  : Text("No checks data available.");
+            }
+          },
         ),
       ),
     );

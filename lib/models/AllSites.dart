@@ -2,7 +2,7 @@ class AllSite {
   String? name, domain, lastCheck, lastStatusResponse, uptime;
   int? percentage, lastStatusCode, id;
   bool? isChecked;
-  Map<int, double>? responseTimes;
+  Map<DateTime, double>? responseTimes;
 
   AllSite({
     this.id,
@@ -35,14 +35,9 @@ class AllSite {
     if (checks != null) {
       responseTimes = {
         for (var check in checks)
-          _convertTimeToMinutes(check['created_at']['date_time']):
+          DateTime.parse(check['created_at']['date_time']):
           check['response_time']?.toDouble() ?? 0.0
       };
     }
-  }
-
-  int _convertTimeToMinutes(String dateTime) {
-    final time = DateTime.parse(dateTime);
-    return time.hour * 60 + time.minute;
   }
 }

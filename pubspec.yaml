@@ -39,6 +39,7 @@ dependencies:
   google_fonts: ^6.2.1
   flutter_svg: ^0.22.0
   fl_chart: ^0.69.2
+  syncfusion_flutter_charts: ^27.2.5
   provider: ^6.1.2
   http: ^1.2.2
   shared_preferences: ^2.3.3
