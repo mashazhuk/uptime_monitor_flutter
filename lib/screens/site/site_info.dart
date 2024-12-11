@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uptime_monitor/screens/site/components/daily_checks_chart.dart';
 import 'dart:convert';
 
 import '../../config.dart';
@@ -42,7 +43,15 @@ class _SiteInfoState extends State<SiteInfo> {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return AllSite.fromJson(data['site']);
+      final checks = (data['site']['root_endpoint']['checks'] as List)
+          .map((check) {
+        final dateTime = DateTime.parse(check['created_at']['date_time']);
+        return MapEntry<int, double>(
+            dateTime.hour * 60 + dateTime.minute,
+            check['response_time'].toDouble());
+      }).toList();
+      return AllSite.fromJson(data['site'])
+        ..responseTimes = Map.fromEntries(checks);
     } else {
       throw Exception('Failed to load site data');
     }
@@ -124,6 +133,7 @@ class _SiteInfoState extends State<SiteInfo> {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             FutureBuilder<AllSite>(
               future: _siteData,
@@ -148,43 +158,24 @@ class _SiteInfoState extends State<SiteInfo> {
                         'Domain: ${siteInfo.domain ?? "N/A"}',
                         style: TextStyle(color: Colors.white54),
                       ),
+                      SizedBox(height: 32),
+                      // Add the chart if data is available
+                      siteInfo.responseTimes != null &&
+                          siteInfo.responseTimes!.isNotEmpty
+                          ? SizedBox(
+                        height: 300, // Adjust height as needed
+                        child: DailyChecksChart(
+                            responseTimes: siteInfo.responseTimes!),
+                      )
+                          : Text("No checks data available."),
                     ],
                   );
                 }
               },
             ),
-          FutureBuilder<List<dynamic>>(
-          future: fetchChecks(siteId), // Загрузка данных
-          builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('No data available'));
-          } else {
-          final checks = snapshot.data!;
-          return Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-          children: [
-          Text(
-          'Response Time Chart',
-          style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-          height: 300,
-          child: ResponseTimeChart(checks: checks),
-          ),
           ],
-          ),
-          );
-          ],
-
         ),
       ),
-
     );
   }
 }
