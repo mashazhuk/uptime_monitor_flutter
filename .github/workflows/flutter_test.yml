@@ -27,3 +27,9 @@ jobs:
       - name: Run tests
         run: |
           flutter test
+
+      - name: Install Newman
+        run: npm install -g newman
+      
+      - name: Run API Tests
+        run: newman run test/flutter.postman_collection.json
