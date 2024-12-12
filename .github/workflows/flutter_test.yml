@@ -33,3 +33,16 @@ jobs:
       
       - name: Run API Tests
         run: newman run test/flutter.postman_collection.json
+        
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: install selenium
+        run: |
+          pip install selenium      
+
+      - name: Run Selenium tests
+        run: |
+          python test.py
