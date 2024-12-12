@@ -1,0 +1,18 @@
+{
+	"info": {
+		"_postman_id": "9679d88e-7d3f-4cce-9ece-b827a15517ae",
+		"name": "flutter",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30099081"
+	},
+	"item": [
+		{
+			"name": "getSiteInfo",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}
