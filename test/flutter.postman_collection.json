@@ -10,6 +10,7 @@
 			"name": "getSiteInfo",
 			"request": {
 				"method": "GET",
+				"url": "https://jsonplaceholder.typicode.com/posts/1",
 				"header": []
 			},
 			"response": []
