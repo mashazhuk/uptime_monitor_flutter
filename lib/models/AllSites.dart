@@ -29,14 +29,5 @@ class AllSite {
     percentage = json['root_endpoint']?['uptime_percentage_1day'];
     uptime = "100%";
     isChecked = latestCheck?['is_successful'] ?? false;
-
-    var checks = json['root_endpoint']?['checks'] as List?;
-    if (checks != null) {
-      responseTimes = {
-        for (var check in checks)
-          DateTime.parse(check['created_at']['date_time']):
-          check['response_time']?.toDouble() ?? 0.0
-      };
-    }
   }
 }

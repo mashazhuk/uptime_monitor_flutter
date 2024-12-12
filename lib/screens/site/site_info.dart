@@ -47,9 +47,14 @@ class _SiteInfoState extends State<SiteInfo> {
       final checks = (data['site']['root_endpoint']['checks'] as List)
           .map((check) {
         final dateTime = DateTime.parse(check['created_at']['date_time']);
+        final isSuccessful = check['is_successful'] ?? false;
+        final responseTime = isSuccessful
+            ? check['response_time']?.toDouble() ?? 0.0
+            : 0.0;
+
         return MapEntry<DateTime, double>(
           dateTime,
-          check['response_time'].toDouble(),
+          responseTime,
         );
       }).toList();
 
@@ -147,32 +152,34 @@ class _SiteInfoState extends State<SiteInfo> {
             } else {
               final siteInfo = snapshot.data!;
               return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      siteInfo.domain ?? "Site domain unavailable",
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.normal,
-                        color: Colors.white54,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    siteInfo.domain ?? "Site domain unavailable",
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.white54,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    height: 150,
+                    child: siteInfo.responseTimes != null &&
+                        siteInfo.responseTimes!.isNotEmpty &&
+                        filterCurrentDayData(siteInfo.responseTimes!).isNotEmpty
+                        ? DailyChecksChart(
+                      responseTimes: filterCurrentDayData(siteInfo.responseTimes!),
+                    )
+                        : Center(
+                      child: Text(
+                        "Нема даних за останні 24 години",
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
-                    const SizedBox(height: 24),
-                    SizedBox(
-                      height: 150,
-                      child: siteInfo.responseTimes != null &&
-                          siteInfo.responseTimes!.isNotEmpty
-                          ? DailyChecksChart(
-                              responseTimes: filterCurrentDayData(siteInfo.responseTimes!),
-                            )
-                          : Center(
-                              child: Text(
-                                "No checks data available.",
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                          ),
-                    ),
-                  ],
+                  )
+
+                ],
               );
             }
           },
@@ -187,9 +194,9 @@ Map<int, double> filterCurrentDayData(Map<DateTime, double> originalData) {
   final todayEnd = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
   return Map.fromEntries(
-    originalData.entries
-      .where((entry) => entry.key.isAfter(todayStart) && entry.key.isBefore(todayEnd))
-      .map((entry) => MapEntry(
+      originalData.entries
+          .where((entry) => entry.key.isAfter(todayStart) && entry.key.isBefore(todayEnd))
+          .map((entry) => MapEntry(
         entry.key.hour * 60 + entry.key.minute,
         entry.value,
       ))
