@@ -1,10 +1,16 @@
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.options import Options
 import time
 
 def test_login():
-    driver = webdriver.Chrome()
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")  # Run in headless mode
+    chrome_options.add_argument("--no-sandbox")  # Required for CI
+    chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource issues
+
+    driver = webdriver.Chrome(options=chrome_options)
 
     try:
         driver.get("https://the-internet.herokuapp.com/login")
