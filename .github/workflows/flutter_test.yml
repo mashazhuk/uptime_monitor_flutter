@@ -45,4 +45,4 @@ jobs:
 
       - name: Run Selenium tests
         run: |
-          python test.py
+          python test/test.py
